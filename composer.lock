@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "70ec73dee742a1813d84669d368a3a7b",
+    "content-hash": "8bfdabff5f61f5de33967a68a2fb2874",
     "packages": [
         {
             "name": "brick/math",
@@ -841,6 +841,36 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
+        },
+        {
+            "name": "functional/tickets",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/tickets",
+                "reference": "3b771dfbfd2fed903445aaa1e2af11f3a90387ca"
+            },
+            "require": {
+                "xefi/laravel-osdd": "*"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Tickets\\Providers\\TicketsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Tickets\\": "src/",
+                    "Functional\\Tickets\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Tickets\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "graham-campbell/result-type",
