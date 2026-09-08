@@ -3,63 +3,41 @@
 namespace Functional\Tickets\Policies;
 
 use App\Models\User;
+use Functional\Tickets\Access\Controls\TicketControl;
+use Functional\Tickets\Database\Seeders\TicketsAccessSeeder;
 use Functional\Tickets\Models\Ticket;
+use Illuminate\Database\Eloquent\Model;
+use Lomkit\Access\Controls\Control;
+use Lomkit\Access\Policies\ControlledPolicy;
 
-class TicketsPolicy
+/**
+ * Every ability delegates to TicketControl, so the row-level rules live in one
+ * place and the API, the policy and the Gate can never disagree.
+ *
+ * Only the relation abilities are declared here: the package has no perimeter
+ * equivalent for attach/detach.
+ */
+class TicketsPolicy extends ControlledPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * @var class-string<Control>
      */
-    public function viewAny(User $user): bool
+    protected string $control = TicketControl::class;
+
+    /**
+     * Determine whether the user can attach a requester or a technician.
+     */
+    public function attachUser(Model $user, Ticket $ticket, User $attached): bool
     {
-        return false;
+        return $user->can(TicketsAccessSeeder::PERMISSION_CREATE)
+            || $user->can(TicketsAccessSeeder::PERMISSION_ASSIGN);
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determine whether the user can detach a requester or a technician.
      */
-    public function view(User $user, Ticket $ticket): bool
+    public function detachUser(Model $user, Ticket $ticket, User $detached): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Ticket $ticket): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Ticket $ticket): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Ticket $ticket): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Ticket $ticket): bool
-    {
-        return false;
+        return $user->can(TicketsAccessSeeder::PERMISSION_ASSIGN);
     }
 }

@@ -30,5 +30,24 @@ class TicketsSeeder extends Seeder
                 ]);
             }
         }
+
+        $this->seedDemoProfileTickets();
+    }
+
+    /**
+     * Guarantee that each demo profile owns rows inside its own perimeter, so
+     * the scoping is observable without hunting for a matching ticket.
+     */
+    private function seedDemoProfileTickets(): void
+    {
+        $requester = User::firstWhere('email', TicketsAccessSeeder::DEMO_REQUESTER_EMAIL);
+        $technician = User::firstWhere('email', TicketsAccessSeeder::DEMO_TECHNICIAN_EMAIL);
+
+        if ($requester === null || $technician === null) {
+            return;
+        }
+
+        Ticket::factory()->count(3)->create(['requester_id' => $requester->getKey()]);
+        Ticket::factory()->count(4)->create(['assigned_technician_id' => $technician->getKey()]);
     }
 }

@@ -6,7 +6,9 @@ use App\Models\User;
 use Functional\Tickets\Database\Factories\TicketFactory;
 use Functional\Tickets\Enums\TicketPriority;
 use Functional\Tickets\Enums\TicketStatus;
+use Functional\Tickets\Policies\TicketsPolicy;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,10 +16,13 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lomkit\Access\Controls\HasControl;
 
 #[UseFactory(TicketFactory::class)]
+#[UsePolicy(TicketsPolicy::class)]
 class Ticket extends Model
 {
+    use HasControl;
     use HasFactory;
     use Prunable;
     use SoftDeletes;
