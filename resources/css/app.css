@@ -7,3 +7,50 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/*
+ * Tokens from the XEFI UX/UI rules.
+ *
+ * The design system deliberately leaves colours to each business unit, so the
+ * brand colour below is a placeholder: swapping --color-brand and
+ * --color-brand-strong is the only change needed to re-skin the interface.
+ */
+@theme {
+    /* Title scale — typography escapes the 4px grid on purpose. */
+    --text-h1: 32px;
+    --text-h2: 24px;
+    --text-h3: 20px;
+    --text-h4: 16px;
+    --text-body: 14px;
+
+    /* Interactive heights — outside the grid, by design, for click comfort. */
+    --spacing-control-xs: 30px;
+    --spacing-control-s: 36px;
+    --spacing-control-m: 40px;
+    --spacing-control-l: 48px;
+
+    /*
+     * Sourced, not invented:
+     *  - #e10600 / #b80510 / #fdecee — brand accent read off xefi.sherlox.fr
+     *  - #111827 (gray-900) — the dominant dark used for primary actions there
+     *  - 10px field radius and the #d1d5db border — app.xefi.com/login
+     * On that site the red marks accents (bars, ticks), it is not the button
+     * colour, which also keeps it from competing with the danger red.
+     */
+    --color-brand: #e10600;
+    --color-brand-strong: #b80510;
+    --color-brand-tint: #fdecee;
+
+    --color-ink: #111827;
+    --color-ink-strong: #0d1117;
+
+    --radius-field: 0.625rem;
+}
+
+/* Rule 4 — every interactive element carries a visible focus state. */
+@layer base {
+    :focus-visible {
+        outline: 2px solid var(--color-brand);
+        outline-offset: 2px;
+    }
+}
