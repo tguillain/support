@@ -2,6 +2,7 @@
 
 namespace Functional\Tickets\Rest\Resources;
 
+use Functional\Tickets\Access\Controls\TicketControl;
 use Functional\Tickets\Enums\TicketPriority;
 use Functional\Tickets\Enums\TicketStatus;
 use Functional\Tickets\Models\Ticket;
@@ -11,6 +12,7 @@ use Functional\Tickets\Rest\Actions\ReopenTicketAction;
 use Functional\Tickets\Rest\Actions\ResolveTicketAction;
 use Functional\Tickets\Rest\Actions\StartTicketProgressAction;
 use Functional\Tickets\Rest\Actions\UnassignTicketAction;
+use Functional\Tickets\Rest\Concerns\ResolvesTicketPerimeter;
 use Functional\Tickets\Rest\Instructions\SearchTitleInstruction;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +28,8 @@ use Lomkit\Rest\Relations\Relation;
 
 class TicketResource extends Resource
 {
+    use ResolvesTicketPerimeter;
+
     /**
      * The model the resource corresponds to.
      *
@@ -68,6 +72,8 @@ class TicketResource extends Resource
             BelongsTo::make('assignedTechnician', UserResource::class),
 
             HasMany::make('comments', CommentResource::class),
+
+            HasMany::make('attachments', AttachmentResource::class),
         ];
     }
 
@@ -139,10 +145,13 @@ class TicketResource extends Resource
         ];
     }
 
-    public function mutating(MutateRequest $request, array $requestBody, Model $model): void
+    /**
+     * @param  array<string, mixed>  $requestBody
+     */
+    public function mutating(MutateRequest $request, array $requestBody, Model $ticket): void
     {
-        if (! $model->exists) {
-            $model->status = TicketStatus::Open;
+        if ($ticket instanceof Ticket && ! $ticket->exists) {
+            $ticket->status = TicketStatus::initial();
         }
     }
 
@@ -156,21 +165,34 @@ class TicketResource extends Resource
      */
     public function searchQuery(RestRequest $request, Builder $query): Builder
     {
-        return $query->controlled();
+        return $this->perimetered($request, $query);
     }
 
     public function destroyQuery(RestRequest $request, Builder $query): Builder
     {
-        return $query->controlled();
+        return $this->perimetered($request, $query);
     }
 
     public function restoreQuery(RestRequest $request, Builder $query): Builder
     {
-        return $query->controlled();
+        return $this->perimetered($request, $query);
     }
 
     public function forceDeleteQuery(RestRequest $request, Builder $query): Builder
     {
-        return $query->controlled();
+        return $this->perimetered($request, $query);
+    }
+
+    /**
+     * Apply the ticket perimeters to a query the package hands over. The hooks
+     * call this inside their own where(...) subquery, so the restriction lands
+     * in the SQL before any row is hydrated.
+     */
+    private function perimetered(RestRequest $request, Builder $query): Builder
+    {
+        return (new TicketControl)->queried(
+            $this->eloquentBuilder($query),
+            $this->perimeterActor($request),
+        );
     }
 }
