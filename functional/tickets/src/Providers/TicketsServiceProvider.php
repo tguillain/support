@@ -3,11 +3,13 @@
 namespace Functional\Tickets\Providers;
 
 use Functional\Tickets\Access\Controls\TicketControl;
+use Functional\Tickets\Database\Seeders\AttachmentsSeeder;
 use Functional\Tickets\Database\Seeders\CommentsSeeder;
 use Functional\Tickets\Database\Seeders\TicketsAccessSeeder;
 use Functional\Tickets\Database\Seeders\TicketsSeeder;
 use Functional\Tickets\Events\TicketAssigned;
 use Functional\Tickets\Listeners\NotifyAssignedTechnician;
+use Functional\Tickets\Livewire\TicketAttachments;
 use Functional\Tickets\Livewire\TicketForm;
 use Functional\Tickets\Livewire\TicketList;
 use Illuminate\Support\Facades\Event;
@@ -35,6 +37,7 @@ class TicketsServiceProvider extends LayerServiceProvider
             $this->loadSeeders([TicketsAccessSeeder::class], priority: -10);
             $this->loadSeeders([TicketsSeeder::class], priority: 0);
             $this->loadSeeders([CommentsSeeder::class], priority: 10);
+            $this->loadSeeders([AttachmentsSeeder::class], priority: 20);
         }
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'tickets');
@@ -46,6 +49,7 @@ class TicketsServiceProvider extends LayerServiceProvider
          */
         Livewire::component('tickets.ticket-list', TicketList::class);
         Livewire::component('tickets.ticket-form', TicketForm::class);
+        Livewire::component('tickets.ticket-attachments', TicketAttachments::class);
 
         /**
          * Registered explicitly rather than relying on Laravel's event

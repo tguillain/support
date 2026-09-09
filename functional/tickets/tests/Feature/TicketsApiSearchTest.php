@@ -161,7 +161,7 @@ class TicketsApiSearchTest extends TicketsApiTestCase
             $response->json('data.fields'),
         );
         $this->assertSame(
-            ['requester', 'assignedTechnician', 'comments'],
+            ['requester', 'assignedTechnician', 'comments', 'attachments'],
             array_column($response->json('data.relations'), 'relation'),
         );
         $this->assertSame(

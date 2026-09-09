@@ -1,6 +1,7 @@
 <?php
 
 use Functional\Tickets\Http\Controllers\TicketsExportController;
+use Functional\Tickets\Rest\Controllers\AttachmentsController;
 use Functional\Tickets\Rest\Controllers\TicketsController;
 use Illuminate\Support\Facades\Route;
 use Lomkit\Rest\Facades\Rest;
@@ -11,6 +12,8 @@ use Lomkit\Rest\Facades\Rest;
 Route::prefix('v1')->middleware('auth')->group(function (): void {
     Rest::resource('tickets', TicketsController::class)
         ->withSoftDeletes();
+
+    Rest::resource('ticket-attachments', AttachmentsController::class);
 
     Route::get('tickets/exports/resolved-this-month', TicketsExportController::class)
         ->name('tickets.exports.resolved-this-month');

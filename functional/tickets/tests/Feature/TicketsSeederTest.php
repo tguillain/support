@@ -3,14 +3,17 @@
 namespace Functional\Tickets\Tests\Feature;
 
 use App\Models\User;
+use Functional\Tickets\Database\Seeders\AttachmentsSeeder;
 use Functional\Tickets\Database\Seeders\CommentsSeeder;
 use Functional\Tickets\Database\Seeders\TicketsAccessSeeder;
 use Functional\Tickets\Database\Seeders\TicketsSeeder;
 use Functional\Tickets\Enums\TicketPriority;
 use Functional\Tickets\Enums\TicketStatus;
+use Functional\Tickets\Models\Attachment;
 use Functional\Tickets\Models\Comment;
 use Functional\Tickets\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -67,6 +70,23 @@ class TicketsSeederTest extends TestCase
 
         /** No tickets, so no comments — but the seeder must not blow up. */
         $this->assertSame(0, Comment::count());
+    }
+
+    public function test_every_seeded_attachment_has_its_file_on_disk(): void
+    {
+        Storage::fake('local');
+
+        $this->seed(TicketsAccessSeeder::class);
+        $this->seed(TicketsSeeder::class);
+        $this->seed(AttachmentsSeeder::class);
+
+        $attachments = Attachment::all();
+
+        $this->assertNotEmpty($attachments, 'The seeder produced no attachment.');
+
+        foreach ($attachments as $attachment) {
+            Storage::disk($attachment->disk)->assertExists($attachment->path);
+        }
     }
 
     public function test_a_seeded_comment_exposes_its_relations(): void

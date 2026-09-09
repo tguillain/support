@@ -1,5 +1,6 @@
 <?php
 
+use Functional\Tickets\Http\Controllers\TicketAttachmentDownloadController;
 use Functional\Tickets\Livewire\TicketForm;
 use Functional\Tickets\Livewire\TicketList;
 use Illuminate\Support\Facades\Route;
@@ -10,4 +11,7 @@ Route::middleware('auth')->group(function (): void {
     Route::livewire('/tickets', TicketList::class)->name('tickets.index');
     Route::livewire('/tickets/create', TicketForm::class)->name('tickets.create');
     Route::livewire('/tickets/{ticket}/edit', TicketForm::class)->name('tickets.edit');
+
+    Route::get('/tickets/attachments/{attachment}', TicketAttachmentDownloadController::class)
+        ->name('tickets.attachments.download');
 });

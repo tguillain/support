@@ -72,6 +72,8 @@ class TicketResource extends Resource
             BelongsTo::make('assignedTechnician', UserResource::class),
 
             HasMany::make('comments', CommentResource::class),
+
+            HasMany::make('attachments', AttachmentResource::class),
         ];
     }
 

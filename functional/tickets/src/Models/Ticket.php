@@ -37,6 +37,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property-read User $requester
  * @property-read User|null $assignedTechnician
  * @property-read Collection<int, Comment> $comments
+ * @property-read Collection<int, Attachment> $attachments
  * @property-read int|null $comments_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static> controlled()
@@ -91,6 +92,12 @@ class Ticket extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /** @return HasMany<Attachment, $this> */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     /** @return Builder<self> */
