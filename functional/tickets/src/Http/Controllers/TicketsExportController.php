@@ -3,6 +3,7 @@
 namespace Functional\Tickets\Http\Controllers;
 
 use Functional\Tickets\Enums\TicketStatus;
+use Functional\Tickets\Exceptions\TicketExportFailedException;
 use Functional\Tickets\Models\Ticket;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -41,15 +42,19 @@ class TicketsExportController
 
         return response()->streamDownload(
             function () use ($request): void {
-                $handle = fopen('php://output', 'wb');
+                $csv = fopen('php://output', 'wb');
 
-                fputcsv($handle, self::COLUMNS);
-
-                foreach ($this->resolvedThisMonth($request)->cursor() as $row) {
-                    fputcsv($handle, (array) $row);
+                if ($csv === false) {
+                    throw TicketExportFailedException::streamUnavailable();
                 }
 
-                fclose($handle);
+                fputcsv($csv, self::COLUMNS);
+
+                foreach ($this->resolvedThisMonth($request)->cursor() as $row) {
+                    fputcsv($csv, (array) $row);
+                }
+
+                fclose($csv);
             },
             $filename,
             ['Content-Type' => 'text/csv'],

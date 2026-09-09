@@ -8,6 +8,9 @@ use Functional\Tickets\Enums\TicketStatus;
 use Functional\Tickets\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Ticket>
+ */
 class TicketFactory extends Factory
 {
     protected $model = Ticket::class;

@@ -68,9 +68,22 @@ class TicketsAccessSeeder extends Seeder
 
     public function run(): void
     {
+        /**
+         * Spatie normally invalidates its permission cache through model
+         * events, but DatabaseSeeder mutes those with WithoutModelEvents. The
+         * cache is therefore flushed by hand: once before reading it, so a map
+         * left by an earlier run cannot make findOrCreate skip an insert, and
+         * again once the permissions exist, so syncPermissions resolves them
+         * against the rows just written instead of the empty collection that
+         * was cached before them.
+         */
+        $this->flushPermissionCache();
+
         foreach (self::permissions() as $permission) {
             Permission::findOrCreate($permission, 'web');
         }
+
+        $this->flushPermissionCache();
 
         foreach (self::ROLES as $role => $permissions) {
             Role::findOrCreate($role, 'web')->syncPermissions($permissions);
@@ -83,7 +96,11 @@ class TicketsAccessSeeder extends Seeder
             $user->syncRoles([$role]);
         }
 
-        /** Spatie caches the permission map; a stale cache makes every check fail. */
+        $this->flushPermissionCache();
+    }
+
+    private function flushPermissionCache(): void
+    {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 

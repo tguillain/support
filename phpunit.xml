@@ -14,6 +14,8 @@
   <source>
     <include>
       <directory>app</directory>
+      <directory>functional/tickets/src</directory>
+      <directory>functional/tickets/database/seeders</directory>
     </include>
     <exclude>
       <directory suffix=".php">**/database/migrations</directory>

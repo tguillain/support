@@ -2,6 +2,7 @@
 
 namespace Functional\Tickets\Access\Controls;
 
+use App\Models\User;
 use Functional\Tickets\Access\Perimeters\AllTicketsPerimeter;
 use Functional\Tickets\Access\Perimeters\AssignedTicketsPerimeter;
 use Functional\Tickets\Access\Perimeters\OwnTicketsPerimeter;
@@ -35,19 +36,19 @@ class TicketControl extends Control
     {
         return [
             AllTicketsPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_ALL))
-                ->should(fn (Model $user, Model $model): bool => true)
-                ->query(fn (Builder $query, Model $user): Builder => $query),
+                ->allowed(fn (User $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_ALL))
+                ->should(fn (User $user, Ticket $ticket): bool => true)
+                ->query(fn (Builder $query, User $user): Builder => $query),
 
             AssignedTicketsPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_ASSIGNED))
-                ->should(fn (Model $user, Model $model): bool => $model->assigned_technician_id === $user->getKey())
-                ->query(fn (Builder $query, Model $user): Builder => $query->where('assigned_technician_id', $user->getKey())),
+                ->allowed(fn (User $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_ASSIGNED))
+                ->should(fn (User $user, Ticket $ticket): bool => $ticket->assigned_technician_id === $user->getKey())
+                ->query(fn (Builder $query, User $user): Builder => $query->where('assigned_technician_id', $user->getKey())),
 
             OwnTicketsPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_OWN))
-                ->should(fn (Model $user, Model $model): bool => $model->requester_id === $user->getKey())
-                ->query(fn (Builder $query, Model $user): Builder => $query->where('requester_id', $user->getKey())),
+                ->allowed(fn (User $user, string $method): bool => $this->grants($user, $method, TicketsAccessSeeder::PERMISSION_VIEW_OWN))
+                ->should(fn (User $user, Ticket $ticket): bool => $ticket->requester_id === $user->getKey())
+                ->query(fn (Builder $query, User $user): Builder => $query->where('requester_id', $user->getKey())),
         ];
     }
 
@@ -58,7 +59,7 @@ class TicketControl extends Control
      * permission. Writing is not: the two write permissions grant the action
      * everywhere, and the perimeter's query and `should` decide on which rows.
      */
-    private function grants(Model $user, string $method, string $viewPermission): bool
+    private function grants(User $user, string $method, string $viewPermission): bool
     {
         return match ($method) {
             'view' => $user->can($viewPermission),

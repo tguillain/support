@@ -2,6 +2,7 @@
 
 namespace Functional\Tickets\Rest\Instructions;
 
+use Functional\Tickets\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
 use Lomkit\Rest\Http\Requests\RestRequest;
 use Lomkit\Rest\Instructions\Instruction;
@@ -15,6 +16,10 @@ use Lomkit\Rest\Instructions\Instruction;
  */
 class SearchTitleInstruction extends Instruction
 {
+    /**
+     * @param  array<string, mixed>  $fields
+     * @param  Builder<Ticket>  $query
+     */
     public function handle(array $fields, Builder $query): void
     {
         $query->whereLike('title', '%'.$fields['value'].'%');

@@ -43,7 +43,7 @@ class TicketsController extends Controller
         );
 
         $this->assertFieldsAreQueryable(
-            Arr::pluck($request->input('search.sorts', []), 'field'),
+            $this->namedFields(Arr::pluck($request->input('search.sorts', []), 'field')),
             'search.sorts',
         );
     }
@@ -74,11 +74,26 @@ class TicketsController extends Controller
     }
 
     /**
+     * Keep only the non-empty strings: anything else in the payload is not a
+     * field name and cannot be compared against the whitelist.
+     *
+     * @param  array<array-key, mixed>  $candidates
+     * @return list<string>
+     */
+    private function namedFields(array $candidates): array
+    {
+        return array_values(array_filter(
+            $candidates,
+            static fn (mixed $candidate): bool => is_string($candidate) && $candidate !== '',
+        ));
+    }
+
+    /**
      * @param  list<string>  $fields
      *
      * @throws ValidationException
      */
-    private function assertFieldsAreQueryable(array $fields, string $key): void
+    private function assertFieldsAreQueryable(array $fields, string $payloadPath): void
     {
         $rejected = array_values(array_diff(array_filter($fields), self::QUERYABLE_FIELDS));
 
@@ -87,7 +102,7 @@ class TicketsController extends Controller
         }
 
         throw ValidationException::withMessages([
-            $key => sprintf(
+            $payloadPath => sprintf(
                 'Only [%s] may be filtered or sorted on. Rejected: [%s].',
                 implode(', ', self::QUERYABLE_FIELDS),
                 implode(', ', $rejected),

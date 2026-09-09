@@ -2,6 +2,7 @@
 
 namespace Functional\Tickets\Notifications;
 
+use App\Models\User;
 use Functional\Tickets\Models\Ticket;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -14,6 +15,7 @@ class TicketAssignedNotification extends Notification
     public function __construct(public readonly Ticket $ticket) {}
 
     /**
+     * @param  User  $notifiable
      * @return list<string>
      */
     public function via(object $notifiable): array
@@ -21,6 +23,9 @@ class TicketAssignedNotification extends Notification
         return ['mail'];
     }
 
+    /**
+     * @param  User  $notifiable
+     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
@@ -28,7 +33,7 @@ class TicketAssignedNotification extends Notification
             ->greeting(__('tickets::notifications.assigned.greeting', ['name' => $notifiable->name]))
             ->line(__('tickets::notifications.assigned.intro', [
                 'title' => $this->ticket->title,
-                'priority' => __('tickets::priorities.'.$this->ticket->priority->value),
+                'priority' => $this->ticket->priority->label(),
             ]))
             ->line(__('tickets::notifications.assigned.sla', [
                 'hours' => $this->ticket->priority->slaHours(),

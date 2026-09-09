@@ -12,7 +12,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  */
 class NotifyAssignedTechnician implements ShouldQueue
 {
-    public bool $afterCommit = true;
+    /** @var bool Matches Illuminate\Bus\Queueable, which declares this untyped. */
+    public $afterCommit = true;
 
     public function handle(TicketAssigned $event): void
     {

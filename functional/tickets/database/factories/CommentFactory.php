@@ -7,6 +7,9 @@ use Functional\Tickets\Models\Comment;
 use Functional\Tickets\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Comment>
+ */
 class CommentFactory extends Factory
 {
     protected $model = Comment::class;

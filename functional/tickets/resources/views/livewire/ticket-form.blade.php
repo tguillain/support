@@ -52,8 +52,6 @@
     </form>
 
     @if ($ticket !== null)
-        <livewire:tickets.ticket-attachments :ticket="$ticket" />
-
         <section class="space-y-3 border-t border-gray-200 pt-6">
             <h2 class="text-lg font-semibold">{{ __('tickets::form.assignment_heading') }}</h2>
 

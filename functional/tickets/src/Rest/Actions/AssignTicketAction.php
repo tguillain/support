@@ -19,8 +19,11 @@ class AssignTicketAction extends TicketTransitionAction
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $fields
+     */
     protected function applyTo(Ticket $ticket, array $fields): void
     {
-        app(AssignTicket::class)($ticket, User::findOrFail($fields['technician_id']));
+        app(AssignTicket::class)($ticket, User::query()->findOrFail((int) $fields['technician_id']));
     }
 }

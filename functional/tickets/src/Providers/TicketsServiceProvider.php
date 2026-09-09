@@ -8,7 +8,10 @@ use Functional\Tickets\Database\Seeders\TicketsAccessSeeder;
 use Functional\Tickets\Database\Seeders\TicketsSeeder;
 use Functional\Tickets\Events\TicketAssigned;
 use Functional\Tickets\Listeners\NotifyAssignedTechnician;
+use Functional\Tickets\Livewire\TicketForm;
+use Functional\Tickets\Livewire\TicketList;
 use Illuminate\Support\Facades\Event;
+use Livewire\Livewire;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
@@ -35,6 +38,14 @@ class TicketsServiceProvider extends LayerServiceProvider
         }
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'tickets');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'tickets');
+
+        /**
+         * Livewire only auto-discovers components under the application's own
+         * App\Livewire namespace, so a layer's components are named here.
+         */
+        Livewire::component('tickets.ticket-list', TicketList::class);
+        Livewire::component('tickets.ticket-form', TicketForm::class);
 
         /**
          * Registered explicitly rather than relying on Laravel's event
