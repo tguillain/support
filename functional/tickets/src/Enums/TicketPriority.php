@@ -9,6 +9,11 @@ enum TicketPriority: string
     case High = 'high';
     case Critical = 'critical';
 
+    public function label(): string
+    {
+        return __('tickets::priorities.'.$this->value);
+    }
+
     public function slaHours(): int
     {
         return match ($this) {

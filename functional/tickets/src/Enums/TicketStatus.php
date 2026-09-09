@@ -10,6 +10,20 @@ enum TicketStatus: string
     case Resolved = 'resolved';
     case Closed = 'closed';
 
+    /**
+     * Where a ticket starts. Read by every creation path so the lifecycle
+     * entry point is declared once.
+     */
+    public static function initial(): self
+    {
+        return self::Open;
+    }
+
+    public function label(): string
+    {
+        return __('tickets::statuses.'.$this->value);
+    }
+
     public function isTerminal(): bool
     {
         return $this->allowedTransitions() === [];
